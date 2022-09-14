@@ -33,42 +33,42 @@ connection.query('SELECT MAX(id) AS "maxid" FROM ips', function(err, maxids) {
 
 app.get('/ip', (req, res) => {
     var ID = getRandomInt(maxid);
-    connection.query(`SELECT * FROM ips WHERE id=${ID}`, function (err, recordset) {
+    connection.query(`SELECT * FROM ips`, function (err, recordset) {
         if (err) console.log(err)
-        res.status(200).send(recordset);
+        res.status(200).send(recordset[ID]);
     });
 });
 
 app.get('/ip/find/:q', (req, res) => {
     const {q} = req.params;
     const {type} = req.body;
-    global.success = false;
     if (!type){
         res.status(400).send("Send request 'type' by GET method");
-        success = true;
+        global.success = true;
     } else {
         /////////////////// ID /////////////////////////////
         if (type == "id"){
             connection.query(`SELECT * FROM ips WHERE id='${q}'`, function (err, recordset){
                 if (err) console.log(err)
-                success = true;
-                res.status(200).send(recordset);
+                result = JSON.stringify(recordset);
+                res.status(200).send(result);
             });
         }
         /////////////////// IP /////////////////////////////
         if(type == "ip"){
             connection.query(`SELECT * FROM ips WHERE IP='${q}'`, function (err, recordset){
                 if (err) console.log(err)
-                success = true;
-                res.status(200).send(recordset);
+                result = JSON.stringify(recordset);
+                res.status(200).send(result);
             });
         }
         /////////////////// COUNTRY CODE ///////////////////
         if(type == "countrycode"){
             connection.query(`SELECT * FROM ips WHERE CountryCode='${q}'`, function (err, recordset){
                 if(err) console.log(err)
-                success = true;
-                res.status(200).send(recordset);
+                console.log(recordset[1]);
+                result = JSON.stringify(recordset);
+                res.status(200).send(result);
             });
         }
     }
@@ -77,7 +77,8 @@ app.get('/ip/find/:q', (req, res) => {
 app.get('/ip/full', (req,res) => {
     connection.query(`SELECT * FROM ips`, function (err,recordset) {
         if (err) console.log(err);
-        res.status(200).send(recordset);
+        result = JSON.stringify(recordset);
+        res.status(200).send(result);
     });
 });
 
@@ -86,3 +87,8 @@ app.listen(
     PORT,
     () => console.log(`mekk api on http://localhost:${PORT}`)
 )
+
+process.on('uncaughtException', function (err) {
+    console.error(err.stack);
+    console.log("Node NOT Exiting...");
+  });
