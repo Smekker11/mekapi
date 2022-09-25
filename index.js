@@ -7,7 +7,7 @@ const dotenv = require('dotenv').config();
 app.use(express.json())
 
 //auth made on .env file
-var connection = mysql.createConnection({
+var connection = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -35,7 +35,7 @@ app.get('/ip', (req, res) => {
     var ID = getRandomInt(maxid);
     connection.query(`SELECT * FROM ips`, function (err, recordset) {
         if (err) console.log(err)
-        res.status(200).send(recordset[ID]);
+        res.status(200).json(recordset[ID]);
     });
 });
 
