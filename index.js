@@ -74,6 +74,14 @@ app.get('/ip/find/:q', (req, res) => {
     }
 });
 
+app.get('/stats', (req, res) => {
+    connection.query(`SELECT CountryCode, count(CountryCode) FROM ips GROUP by CountryCode ORDER BY count(CountryCode) DESC;`, function(err, recordset){
+        if (err) console.log(err);
+        result = JSON.stringify(recordset);
+        res.status(200).send(result);
+    });
+});
+
 app.get('/ip/full', (req,res) => {
     connection.query(`SELECT * FROM ips`, function (err,recordset) {
         if (err) console.log(err);
