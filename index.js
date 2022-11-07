@@ -1,8 +1,10 @@
-var mysql = require('mysql');
-const express = require('express');
-const app = require('express')();
+import Audic from 'audic';
+import mysql from 'mysql';
+import express from 'express';
+const app = express();
 const PORT = 8080;
-const dotenv = require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 app.use(express.json())
 
@@ -88,6 +90,14 @@ app.get('/ip/full', (req,res) => {
         result = JSON.stringify(recordset);
         res.status(200).send(result);
     });
+});
+
+app.post('/audio', async (req,res) => {
+    const audic = new Audic('audio.mp3');
+    await audic.play();
+    audic.addEventListener('ended', () => {
+    audic.destroy();
+  });
 });
 
 
